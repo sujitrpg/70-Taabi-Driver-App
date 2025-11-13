@@ -13,7 +13,7 @@ const CURRENT_DRIVER_ID = "default-driver-1";
 
 // Add avatar URLs for specific drivers
 const driverAvatars: Record<string, string> = {
-  "default-driver-2": "/shubham-profile.jpeg",
+  "driver-2": "/shubham-profile.jpeg",
   "default-driver-3": "/profile-pic.jpeg"
 };
 
