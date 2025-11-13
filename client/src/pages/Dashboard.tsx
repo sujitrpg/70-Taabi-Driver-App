@@ -28,9 +28,9 @@ export default function Dashboard() {
   ];
 
   const topDrivers = [
-    { rank: 1, name: "Sujit Soni", points: 3450, level: "Fleet Legend" },
-    { rank: 2, name: "Shubham Agarwal", points: 3200, level: "Pro Driver" },
-    { rank: 3, name: "Sumandeep Singh", points: 2980, level: "Pro Driver" },
+    { rank: 1, name: "Rajesh Pratap Singh", score: 98, points: 2450, avatarUrl: undefined },
+    { rank: 2, name: "Shubham Agarwal", score: 95, points: 2380, avatarUrl: "/shubham-profile.jpeg" },
+    { rank: 3, name: "Prakhar Raghuvansh", score: 92, points: 2250, avatarUrl: "/profile-pic.jpeg" },
   ];
 
   return (
