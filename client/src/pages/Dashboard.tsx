@@ -38,7 +38,7 @@ export default function Dashboard() {
       <div className="p-4 space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold">Welcome Back!</h1>
+            <h1 className="text-3xl font-bold">Welcome Back Prakhar!</h1>
             <p className="text-muted-foreground">Let's make today count</p>
           </div>
           <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-lime-green/20 border border-lime-green/30">

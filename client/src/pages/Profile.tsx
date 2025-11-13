@@ -20,8 +20,8 @@ import {
 
 export default function Profile() {
   const driver = {
-    name: "Deepak Yadav",
-    phoneNumber: "+91 98765 43210",
+    name: "Prakhar Raghuvansh",
+    phoneNumber: "+91 9006488711",
     level: "Pro Driver",
     totalPoints: 2450,
     currentStreak: 12,
