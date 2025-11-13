@@ -11,12 +11,6 @@ type Period = "daily" | "weekly" | "monthly";
 
 const CURRENT_DRIVER_ID = "default-driver-1";
 
-// Add avatar URLs for specific drivers
-const driverAvatars: Record<string, string> = {
-  "driver-2": "/shubham-profile.jpeg",
-  "default-driver-3": "/profile-pic.jpeg"
-};
-
 export default function Leaderboard() {
   const [period, setPeriod] = useState<Period>("weekly");
 
@@ -28,12 +22,6 @@ export default function Leaderboard() {
 
   const { data: leaderboardData, isLoading } = useLeaderboard(period);
   const { data: rankData } = useDriverRank(CURRENT_DRIVER_ID);
-  
-  // Enhance leaderboard data with avatar URLs
-  const enhancedLeaderboardData = leaderboardData?.map(driver => ({
-    ...driver,
-    avatarUrl: driver.avatarUrl || driverAvatars[driver.id]
-  }));
 
   return (
     <div className="min-h-screen bg-background pb-20">
@@ -96,7 +84,7 @@ export default function Leaderboard() {
                 ))}
               </>
             ) : (
-              enhancedLeaderboardData?.slice(0, 10).map((driver, index) => (
+              leaderboardData?.slice(0, 10).map((driver, index) => (
                 <LeaderboardItem 
                   key={driver.id} 
                   rank={index + 1}
