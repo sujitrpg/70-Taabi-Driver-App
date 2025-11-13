@@ -397,7 +397,7 @@ export class MemStorage implements IStorage {
 
     // Seed other drivers for leaderboard
     const otherDrivers: Driver[] = [
-      { id: "driver-2", phoneNumber: "+919876543211", name: "Sujit Soni", avatarUrl: null, level: "Fleet Legend", totalPoints: 3450, currentStreak: 25, totalTrips: 230, createdAt: new Date() },
+      { id: "driver-2", phoneNumber: "+918989522157", name: "Sujit Soni", avatarUrl: null, level: "Fleet Legend", totalPoints: 3450, currentStreak: 25, totalTrips: 230, createdAt: new Date() },
       { id: "driver-3", phoneNumber: "+919876543212", name: "Shubham Agarwal", avatarUrl: null, level: "Pro Driver", totalPoints: 3200, currentStreak: 18, totalTrips: 210, createdAt: new Date() },
       { id: "driver-4", phoneNumber: "+919876543213", name: "Sumandeep Singh", avatarUrl: null, level: "Pro Driver", totalPoints: 2980, currentStreak: 15, totalTrips: 195, createdAt: new Date() },
       { id: "driver-5", phoneNumber: "+919876543214", name: "Saurabh Ginde", avatarUrl: null, level: "Rookie Driver", totalPoints: 2750, currentStreak: 10, totalTrips: 175, createdAt: new Date() },
