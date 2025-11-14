@@ -17,7 +17,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Map, MapPin, Gift, Users, TrendingUp, Award, AlertTriangle, Phone } from "lucide-react";
+import { Map, MapPin, Gift, Users, TrendingUp, Award, AlertTriangle, Phone, Heart, HandHeart, GraduationCap, ClipboardCheck } from "lucide-react";
 import { useLocation } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 import shubhamImage from "@/assets/images/shubham.jpeg";
@@ -32,6 +32,10 @@ export default function Dashboard() {
     { icon: MapPin, label: "Nearby", path: "/nearby", color: "bg-emerald-500 text-white" },
     { icon: Gift, label: "Rewards", path: "/rewards", color: "bg-lime-green text-white" },
     { icon: Users, label: "Community", path: "/community", color: "bg-purple-500 text-white" },
+    { icon: Heart, label: "Wellness", path: "/wellness", color: "bg-pink-500 text-white" },
+    { icon: HandHeart, label: "Support Hub", path: "/support", color: "bg-orange-500 text-white" },
+    { icon: GraduationCap, label: "Learning", path: "/learning", color: "bg-indigo-500 text-white" },
+    { icon: ClipboardCheck, label: "Checklist", path: "/checklist", color: "bg-cyan-500 text-white" },
   ];
 
   const recentBadges = [
@@ -100,19 +104,19 @@ export default function Dashboard() {
 
         <div>
           <h2 className="text-xl font-bold mb-4">Quick Actions</h2>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-3">
             {quickActions.map((action) => {
               const Icon = action.icon;
               return (
                 <Button
                   key={action.label}
                   variant="outline"
-                  className={`h-24 flex flex-col gap-2 ${action.color} border-0 hover-elevate`}
+                  className={`h-20 flex flex-col gap-1.5 ${action.color} border-0 hover-elevate`}
                   onClick={() => setLocation(action.path)}
                   data-testid={`button-${action.label.toLowerCase().replace(/\s/g, '-')}`}
                 >
-                  <Icon className="w-8 h-8" />
-                  <span className="font-semibold">{action.label}</span>
+                  <Icon className="w-6 h-6" />
+                  <span className="font-semibold text-sm">{action.label}</span>
                 </Button>
               );
             })}
