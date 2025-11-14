@@ -17,7 +17,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Map, MapPin, Gift, Users, TrendingUp, Award, AlertTriangle, Phone, Heart, HandHeart, GraduationCap, ClipboardCheck } from "lucide-react";
+import { Map, MapPin, Gift, Users, TrendingUp, Award, AlertTriangle, Phone, Heart, HandHeart, GraduationCap, ClipboardCheck, Zap, Star } from "lucide-react";
 import { useLocation } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 import shubhamImage from "@/assets/images/shubham.jpeg";
@@ -28,14 +28,14 @@ export default function Dashboard() {
   const { toast } = useToast();
 
   const quickActions = [
-    { icon: Map, label: "Start Route", path: "/route", color: "bg-taabi-blue text-white" },
-    { icon: MapPin, label: "Nearby", path: "/nearby", color: "bg-emerald-500 text-white" },
-    { icon: Gift, label: "Rewards", path: "/rewards", color: "bg-lime-green text-white" },
-    { icon: Users, label: "Community", path: "/community", color: "bg-purple-500 text-white" },
-    { icon: Heart, label: "Wellness", path: "/wellness", color: "bg-pink-500 text-white" },
-    { icon: HandHeart, label: "Support Hub", path: "/support", color: "bg-orange-500 text-white" },
-    { icon: GraduationCap, label: "Learning", path: "/learning", color: "bg-indigo-500 text-white" },
-    { icon: ClipboardCheck, label: "Checklist", path: "/checklist", color: "bg-cyan-500 text-white" },
+    { icon: Map, label: "Start Route", path: "/route", gradient: "from-blue-500 to-cyan-500" },
+    { icon: MapPin, label: "Nearby", path: "/nearby", gradient: "from-emerald-500 to-teal-500" },
+    { icon: Gift, label: "Rewards", path: "/rewards", gradient: "from-lime-500 to-green-500" },
+    { icon: Users, label: "Community", path: "/community", gradient: "from-purple-500 to-pink-500" },
+    { icon: Heart, label: "Wellness", path: "/wellness", gradient: "from-pink-500 to-rose-500" },
+    { icon: HandHeart, label: "Support Hub", path: "/support", gradient: "from-orange-500 to-red-500" },
+    { icon: GraduationCap, label: "Learning", path: "/learning", gradient: "from-indigo-500 to-purple-500" },
+    { icon: ClipboardCheck, label: "Checklist", path: "/checklist", gradient: "from-cyan-500 to-blue-500" },
   ];
 
   const recentBadges = [
@@ -66,22 +66,24 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-20">
-      <div className="p-4 space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold">Welcome Back Prakhar!</h1>
-            <p className="text-muted-foreground">Let's make today count</p>
-            <p className="text-xs text-muted-foreground/60 mt-1">Powered by taabi.ai</p>
-          </div>
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-lime-green/20 border border-lime-green/30">
-              <TrendingUp className="w-4 h-4 text-lime-green" />
-              <span className="text-sm font-semibold text-lime-green">Day 12 Streak</span>
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 pb-20">
+      <div className="p-4 space-y-5">
+        {/* Hero Header with Gradient */}
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-taabi-blue via-blue-600 to-cyan-500 p-6 text-white shadow-xl">
+          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS1vcGFjaXR5PSIwLjA1IiBzdHJva2Utd2lkdGg9IjEiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JpZCkiLz48L3N2Zz4=')] opacity-30"></div>
+          <div className="relative flex items-start justify-between">
+            <div className="flex-1">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/20 backdrop-blur-sm mb-3">
+                <Zap className="w-4 h-4" />
+                <span className="text-sm font-semibold">Day 12 Streak</span>
+              </div>
+              <h1 className="text-3xl font-bold mb-1">Welcome Back, Prakhar!</h1>
+              <p className="text-white/90 text-base">Let's make today count</p>
+              <p className="text-xs text-white/60 mt-2">Powered by taabi.ai</p>
             </div>
             <Button 
               size="sm" 
-              className="bg-red-600 hover:bg-red-700 text-white gap-2"
+              className="bg-red-600 hover:bg-red-700 text-white gap-2 shadow-lg"
               onClick={handleSOS}
               data-testid="button-sos"
             >
@@ -91,8 +93,10 @@ export default function Dashboard() {
           </div>
         </div>
 
+        {/* Points Wallet */}
         <PointsWallet points={2450} recentEarnings={120} onRedeem={() => setLocation("/rewards")} />
 
+        {/* Score Card */}
         <ScoreCard 
           grade="A" 
           fuelScore={92} 
@@ -102,40 +106,60 @@ export default function Dashboard() {
           date="Last Trip - Today"
         />
 
+        {/* Quick Actions - Modern Grid */}
         <div>
-          <h2 className="text-xl font-bold mb-4">Quick Actions</h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-bold flex items-center gap-2">
+              <Star className="w-5 h-5 text-taabi-blue" />
+              Quick Access
+            </h2>
+          </div>
           <div className="grid grid-cols-2 gap-3">
             {quickActions.map((action) => {
               const Icon = action.icon;
               return (
-                <Button
+                <button
                   key={action.label}
-                  variant="outline"
-                  className={`h-20 flex flex-col gap-1.5 ${action.color} border-0 hover-elevate`}
                   onClick={() => setLocation(action.path)}
+                  className={`group relative overflow-hidden rounded-2xl bg-gradient-to-br ${action.gradient} p-5 text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]`}
                   data-testid={`button-${action.label.toLowerCase().replace(/\s/g, '-')}`}
                 >
-                  <Icon className="w-6 h-6" />
-                  <span className="font-semibold text-sm">{action.label}</span>
-                </Button>
+                  <div className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-colors duration-300"></div>
+                  <div className="relative flex flex-col items-center gap-2">
+                    <div className="p-3 rounded-xl bg-white/20 backdrop-blur-sm group-hover:bg-white/30 transition-colors duration-300">
+                      <Icon className="w-6 h-6" />
+                    </div>
+                    <span className="font-semibold text-sm text-center">{action.label}</span>
+                  </div>
+                </button>
               );
             })}
           </div>
         </div>
 
+        {/* Performance Metrics - Enhanced */}
         <div>
-          <h2 className="text-xl font-bold mb-4">Performance Metrics</h2>
-          <Card className="p-6">
-            <div className="grid grid-cols-2 gap-6">
+          <div className="flex items-center gap-2 mb-4">
+            <TrendingUp className="w-5 h-5 text-taabi-blue" />
+            <h2 className="text-xl font-bold">Performance Metrics</h2>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="rounded-2xl bg-gradient-to-br from-emerald-500/10 to-teal-500/10 border border-emerald-500/20 p-6 hover-elevate">
               <ProgressRing value={92} label="Fuel Efficiency" />
+            </div>
+            <div className="rounded-2xl bg-gradient-to-br from-blue-500/10 to-cyan-500/10 border border-blue-500/20 p-6 hover-elevate">
               <ProgressRing value={88} label="Safety Score" />
             </div>
-          </Card>
+          </div>
         </div>
 
+        {/* Recent Achievements */}
         <div>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold">Recent Achievements</h2>
+            <div className="flex items-center gap-2">
+              <Award className="w-5 h-5 text-taabi-blue" />
+              <h2 className="text-xl font-bold">Recent Achievements</h2>
+            </div>
             <Button variant="ghost" size="sm" onClick={() => setLocation("/profile")} data-testid="button-view-all-badges">
               View All
             </Button>
@@ -149,20 +173,25 @@ export default function Dashboard() {
           </ScrollArea>
         </div>
 
+        {/* Top Drivers - Enhanced */}
         <div>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold">Top Drivers</h2>
+            <div className="flex items-center gap-2">
+              <Users className="w-5 h-5 text-taabi-blue" />
+              <h2 className="text-xl font-bold">Top Drivers</h2>
+            </div>
             <Button variant="ghost" size="sm" onClick={() => setLocation("/leaderboard")} data-testid="button-view-full-leaderboard">
               Full Leaderboard
             </Button>
           </div>
-          <Card className="p-4 space-y-2">
+          <div className="rounded-2xl bg-gradient-to-br from-card to-muted/30 border border-border/50 p-4 space-y-2 shadow-sm">
             {topDrivers.map((driver) => (
               <LeaderboardItem key={driver.rank} {...driver} />
             ))}
-          </Card>
+          </div>
         </div>
 
+        {/* SOS Dialog */}
         <AlertDialog open={sosDialogOpen} onOpenChange={setSosDialogOpen}>
           <AlertDialogContent>
             <AlertDialogHeader>
