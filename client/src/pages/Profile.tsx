@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { BadgeDisplay } from "@/components/BadgeDisplay";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useAuth } from "@/contexts/AuthContext";
 import { 
   User, 
   TrendingUp, 
@@ -21,6 +22,7 @@ import prakharImage from "@/assets/images/prakhar.jpeg";
 import coverImage from "@assets/generated_images/Truck_driver_dashboard_cover_c6ffea8a.png";
 
 export default function Profile() {
+  const { logout } = useAuth();
   const driver = {
     name: "Prakhar Raghuvansh",
     phoneNumber: "+91 9006488711",
@@ -164,7 +166,12 @@ export default function Profile() {
             <Heart className="w-5 h-5" />
             Wellness Tips
           </Button>
-          <Button variant="outline" className="w-full justify-start gap-3 text-destructive" data-testid="button-logout">
+          <Button 
+            variant="outline" 
+            className="w-full justify-start gap-3 text-destructive" 
+            onClick={logout}
+            data-testid="button-logout"
+          >
             <LogOut className="w-5 h-5" />
             Logout
           </Button>
