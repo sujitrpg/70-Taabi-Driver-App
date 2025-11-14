@@ -49,7 +49,7 @@ export default function Dashboard() {
   const topDrivers = [
     { rank: 1, name: "Sujit Soni", score: 98, points: 3450, avatarUrl: undefined, level: "Fleet Legend" },
     { rank: 2, name: "Shubham Agarwal", score: 95, points: 3200, avatarUrl: shubhamImage, level: "Pro Driver" },
-    { rank: 3, name: "Sumandeep Singh", score: 92, points: 2980, avatarUrl: undefined, level: "Pro Driver" },
+    { rank: 3, name: "Prakhar Raghuvansh", score: 92, points: 3000, avatarUrl: undefined, level: "Pro Driver" },
   ];
 
   const handleSOS = () => {
