@@ -309,4 +309,24 @@
       transform: rotateY(360deg) rotateX(360deg);
     }
   }
+
+  @keyframes scanLine {
+    0%, 100% {
+      clip-path: inset(0 0 100% 0);
+    }
+    50% {
+      clip-path: inset(0 0 0 0);
+    }
+  }
+
+  @keyframes bounce {
+    0%, 100% {
+      transform: translateY(0);
+      opacity: 0.5;
+    }
+    50% {
+      transform: translateY(-8px);
+      opacity: 1;
+    }
+  }
 }

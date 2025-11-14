@@ -3,33 +3,40 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Truck, User, Lock, ArrowRight, AlertCircle, ScanFace } from "lucide-react";
+import { User, Lock, ArrowRight, AlertCircle, ScanFace, Fingerprint, QrCode } from "lucide-react";
 import { useLocation } from "wouter";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useAuth } from "@/contexts/AuthContext";
+import { LoginAnimation } from "@/components/LoginAnimation";
 import taabiLogo from "@assets/download_1763097036090.jpeg";
 
 export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [isScanning, setIsScanning] = useState(false);
+  const [showAnimation, setShowAnimation] = useState(false);
+  const [loginMethod, setLoginMethod] = useState<"password" | "face" | "fingerprint" | "qr">("password");
   const [, setLocation] = useLocation();
   const { login } = useAuth();
 
   const handleLogin = () => {
     if (username && password) {
-      login(username);
-      setLocation("/");
+      setLoginMethod("password");
+      setShowAnimation(true);
+      setTimeout(() => {
+        login(username);
+        setLocation("/");
+      }, 2000);
     } else {
       setError("Please enter both username and password");
     }
   };
 
-  const handleFaceScan = () => {
-    setIsScanning(true);
+  const handleBiometricLogin = (method: "face" | "fingerprint" | "qr") => {
+    setLoginMethod(method);
+    setShowAnimation(true);
     setTimeout(() => {
-      login("Face Scan User");
+      login(`${method.charAt(0).toUpperCase() + method.slice(1)} Scan User`);
       setLocation("/");
     }, 2000);
   };
@@ -41,8 +48,10 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-taabi-blue via-taabi-blue/90 to-taabi-blue/80 flex items-center justify-center p-4">
-      <div className="w-full max-w-md space-y-8">
+    <>
+      <LoginAnimation isVisible={showAnimation} loginMethod={loginMethod} />
+      <div className="min-h-screen bg-gradient-to-br from-taabi-blue via-taabi-blue/90 to-taabi-blue/80 flex items-center justify-center p-4">
+        <div className="w-full max-w-md space-y-8">
         <div className="text-center text-white">
           <div className="w-32 h-32 bg-white rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-2xl overflow-hidden p-2">
             <img src={taabiLogo} alt="Taabi Logo" className="w-full h-full object-contain" />
@@ -110,7 +119,7 @@ export default function Login() {
               className="w-full bg-taabi-blue hover:bg-taabi-blue/90" 
               size="lg"
               onClick={handleLogin}
-              disabled={!username || !password || isScanning}
+              disabled={!username || !password || showAnimation}
               data-testid="button-login"
             >
               Login
@@ -128,28 +137,43 @@ export default function Login() {
               </div>
             </div>
 
-            <Button 
-              variant="outline"
-              size="lg"
-              onClick={handleFaceScan}
-              disabled={isScanning}
-              className="w-full relative overflow-hidden"
-              data-testid="button-face-scan"
-            >
-              <div className={`flex items-center gap-2 ${isScanning ? 'opacity-0' : 'opacity-100'}`}>
-                <ScanFace className="w-5 h-5" />
-                Face Scan Login
-              </div>
-              {isScanning && (
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-12 h-12" style={{
-                    animation: 'flip 2s ease-in-out'
-                  }}>
-                    <ScanFace className="w-12 h-12 text-taabi-blue" />
-                  </div>
-                </div>
-              )}
-            </Button>
+            <div className="grid grid-cols-3 gap-3">
+              <Button 
+                variant="outline"
+                size="lg"
+                onClick={() => handleBiometricLogin("face")}
+                disabled={showAnimation}
+                className="flex-col h-auto py-4 gap-2"
+                data-testid="button-face-scan"
+              >
+                <ScanFace className="w-6 h-6" />
+                <span className="text-xs">Face</span>
+              </Button>
+
+              <Button 
+                variant="outline"
+                size="lg"
+                onClick={() => handleBiometricLogin("fingerprint")}
+                disabled={showAnimation}
+                className="flex-col h-auto py-4 gap-2"
+                data-testid="button-fingerprint-scan"
+              >
+                <Fingerprint className="w-6 h-6" />
+                <span className="text-xs">Fingerprint</span>
+              </Button>
+
+              <Button 
+                variant="outline"
+                size="lg"
+                onClick={() => handleBiometricLogin("qr")}
+                disabled={showAnimation}
+                className="flex-col h-auto py-4 gap-2"
+                data-testid="button-qr-scan"
+              >
+                <QrCode className="w-6 h-6" />
+                <span className="text-xs">QR Code</span>
+              </Button>
+            </div>
           </div>
 
           <div className="text-center text-sm text-muted-foreground">
@@ -161,7 +185,8 @@ export default function Login() {
           <p>Powered by Taabi Fleet Solutions</p>
           <p className="text-white/40 mt-1">AI-driven logistics by taabi.ai</p>
         </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
