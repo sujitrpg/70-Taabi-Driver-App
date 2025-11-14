@@ -25,8 +25,10 @@ export default function Login() {
       setShowAnimation(true);
       setTimeout(() => {
         login(username);
-        setLocation("/");
-      }, 2000);
+        setTimeout(() => {
+          setLocation("/");
+        }, 100);
+      }, 2200);
     } else {
       setError("Please enter both username and password");
     }
@@ -37,8 +39,10 @@ export default function Login() {
     setShowAnimation(true);
     setTimeout(() => {
       login(`${method.charAt(0).toUpperCase() + method.slice(1)} Scan User`);
-      setLocation("/");
-    }, 2000);
+      setTimeout(() => {
+        setLocation("/");
+      }, 100);
+    }, 2200);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
