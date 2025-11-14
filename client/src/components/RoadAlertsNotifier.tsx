@@ -20,20 +20,24 @@ export function RoadAlertsNotifier() {
       return;
     }
 
-    // Show a random alert every 3 minutes
+    // Show first alert after 2 minutes
+    const initialTimeout = setTimeout(() => {
+      const randomIndex = Math.floor(Math.random() * alerts.length);
+      setCurrentAlertIndex(randomIndex);
+      setShowAlert(true);
+    }, 120000); // 2 minutes
+
+    // Show a random alert every 5 minutes after the initial delay
     const interval = setInterval(() => {
       const randomIndex = Math.floor(Math.random() * alerts.length);
       setCurrentAlertIndex(randomIndex);
       setShowAlert(true);
-    }, 180000); // 3 minutes
+    }, 300000); // 5 minutes
 
-    // Show first alert immediately
-    setTimeout(() => {
-      setCurrentAlertIndex(0);
-      setShowAlert(true);
-    }, 5000);
-
-    return () => clearInterval(interval);
+    return () => {
+      clearTimeout(initialTimeout);
+      clearInterval(interval);
+    };
   }, [alerts]);
 
   // Auto-dismiss after 5 seconds
