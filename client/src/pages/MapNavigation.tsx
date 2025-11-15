@@ -83,6 +83,9 @@ export default function MapNavigation() {
       setOtpValue('');
       setCapturedPhoto(false);
       
+      // Auto-minimize bottom sheet when moving to next stop
+      setIsBottomSheetExpanded(false);
+      
       if (data.allCompleted) {
         toast({
           title: "Trip Completed!",
@@ -131,9 +134,10 @@ export default function MapNavigation() {
   
   const handleCameraCapture = () => {
     setCapturedPhoto(true);
-    setTimeout(() => {
-      completeStopMutation.mutate();
-    }, 500);
+  };
+  
+  const handleGoToNextStop = () => {
+    completeStopMutation.mutate();
   };
 
   const currentPoint = deliveryPoints[trip?.currentStopIndex ?? 0];
@@ -221,40 +225,35 @@ export default function MapNavigation() {
         {/* Optimized Route Path - Clean bright blue like Google Maps */}
         <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 5 }}>
           {(() => {
-            // Define the full optimized route path
-            const fullRoutePath = "M 50 85 L 48 80 L 46 75 L 44 70 L 42 65 L 40 60 L 38 55 L 36 50 L 35 45 L 36 40 L 38 35 L 40 30 L 42 27 L 44 24 L 46 22 L 48 21 L 50 20";
+            // Calculate driver position
+            const driverLeft = 50 - (simulatedProgress / 100) * 2;
+            const driverTop = 85 - (simulatedProgress / 100) * 65;
             
-            // Calculate how much of the route has been completed based on progress
-            const totalPathLength = 400; // approximate path length
-            const completedLength = (simulatedProgress / 100) * totalPathLength;
+            // Destination is always at 50%, 20%
+            const destLeft = 50;
+            const destTop = 20;
+            
+            // Create a smooth curved path from driver to destination
+            const controlX1 = driverLeft - 8;
+            const controlY1 = driverTop - 15;
+            const controlX2 = destLeft - 5;
+            const controlY2 = destTop + 10;
+            
+            const routePath = `M ${driverLeft} ${driverTop} C ${controlX1} ${controlY1}, ${controlX2} ${controlY2}, ${destLeft} ${destTop}`;
             
             return (
               <>
-                {/* Full route path - gray (unvisited portion) */}
+                {/* Active route - bright blue with strong glow like Google Maps */}
                 <path
-                  d={fullRoutePath}
-                  fill="none"
-                  stroke="#4a5568"
-                  strokeWidth="5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  opacity="0.6"
-                />
-                
-                {/* Active route ahead - bright blue with glow like Google Maps */}
-                <motion.path
-                  d={fullRoutePath}
+                  d={routePath}
                   fill="none"
                   stroke="#1E90FF"
-                  strokeWidth="6"
+                  strokeWidth="8"
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  strokeDasharray={totalPathLength}
-                  strokeDashoffset={-completedLength}
                   style={{ 
-                    filter: 'drop-shadow(0 0 8px rgba(30, 144, 255, 0.8))',
+                    filter: 'drop-shadow(0 0 12px rgba(30, 144, 255, 1))',
                   }}
-                  transition={{ duration: 0.3 }}
                 />
               </>
             );
@@ -571,12 +570,12 @@ export default function MapNavigation() {
                       <CheckCircle2 className="w-20 h-20 text-white" />
                     </div>
                     <p className="text-lg font-semibold text-green-600">Photo Captured!</p>
-                    <p className="text-sm text-muted-foreground">Completing delivery...</p>
+                    <p className="text-sm text-muted-foreground">Delivery proof verified</p>
                   </motion.div>
                 )}
               </div>
               
-              {!capturedPhoto && (
+              {!capturedPhoto ? (
                 <Button
                   variant="outline"
                   onClick={() => setProofStep('otp')}
@@ -584,6 +583,17 @@ export default function MapNavigation() {
                   data-testid="button-back-to-otp"
                 >
                   Back to OTP
+                </Button>
+              ) : (
+                <Button
+                  onClick={handleGoToNextStop}
+                  size="lg"
+                  className="w-full gap-2 bg-gradient-to-r from-green-600 to-emerald-600"
+                  disabled={completeStopMutation.isPending}
+                  data-testid="button-go-next-stop"
+                >
+                  <CheckCircle2 className="w-5 h-5" />
+                  {completeStopMutation.isPending ? "Completing..." : "Go to Next Stop"}
                 </Button>
               )}
             </div>
