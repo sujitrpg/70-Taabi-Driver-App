@@ -179,34 +179,72 @@ export default function MapNavigation() {
 
         {/* Active Route - Highlighted Shortest Path */}
         <svg className="absolute inset-0 w-full h-full pointer-events-none">
-          {/* Already traveled path (gray) */}
-          <motion.path
-            d="M 50 85 L 50 70 L 40 70 L 40 50 L 30 50 L 30 30 L 50 30 L 50 20"
-            fill="none"
-            stroke="#d1d5db"
-            strokeWidth="8"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeDasharray="400"
-            initial={{ strokeDashoffset: 0 }}
-            animate={{ strokeDashoffset: -(simulatedProgress * 4) }}
-            transition={{ duration: 0.5 }}
-          />
-          
-          {/* Highlighted shortest route (bright blue with glow - reduces as driver approaches) */}
-          <motion.path
-            d="M 50 85 L 50 70 L 40 70 L 40 50 L 30 50 L 30 30 L 50 30 L 50 20"
-            fill="none"
-            stroke="#1E90FF"
-            strokeWidth="8"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeDasharray="400"
-            initial={{ strokeDashoffset: 0 }}
-            animate={{ strokeDashoffset: (simulatedProgress * 4) }}
-            transition={{ duration: 0.5 }}
-            style={{ filter: 'drop-shadow(0 0 6px #1E90FF)' }}
-          />
+          {/* Calculate dynamic path based on driver position */}
+          {(() => {
+            const driverLeft = simulatedProgress < 15 ? 50 :
+                              simulatedProgress < 35 ? 50 :
+                              simulatedProgress < 55 ? 40 :
+                              simulatedProgress < 75 ? 30 :
+                              simulatedProgress < 90 ? 50 : 50;
+            const driverTop = simulatedProgress < 15 ? 85 :
+                             simulatedProgress < 35 ? 70 :
+                             simulatedProgress < 55 ? 50 :
+                             simulatedProgress < 75 ? 30 :
+                             simulatedProgress < 90 ? 30 : 20;
+            
+            const destLeft = 50;
+            const destTop = 20;
+            
+            // Create path from current driver position to destination
+            let pathD = `M ${driverLeft} ${driverTop}`;
+            
+            // Add intermediate waypoints based on progress
+            if (simulatedProgress < 15) {
+              pathD += ` L 50 70 L 40 70 L 40 50 L 30 50 L 30 30 L 50 30 L 50 20`;
+            } else if (simulatedProgress < 35) {
+              pathD += ` L 40 70 L 40 50 L 30 50 L 30 30 L 50 30 L 50 20`;
+            } else if (simulatedProgress < 55) {
+              pathD += ` L 40 50 L 30 50 L 30 30 L 50 30 L 50 20`;
+            } else if (simulatedProgress < 75) {
+              pathD += ` L 30 30 L 50 30 L 50 20`;
+            } else if (simulatedProgress < 90) {
+              pathD += ` L 50 20`;
+            } else {
+              pathD += ` L 50 20`;
+            }
+            
+            return (
+              <>
+                {/* Already traveled path (gray) - from start to current position */}
+                <motion.path
+                  d="M 50 85 L 50 70 L 40 70 L 40 50 L 30 50 L 30 30 L 50 30 L 50 20"
+                  fill="none"
+                  stroke="#d1d5db"
+                  strokeWidth="8"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeDasharray="400"
+                  initial={{ strokeDashoffset: 0 }}
+                  animate={{ strokeDashoffset: -(simulatedProgress * 4) }}
+                  transition={{ duration: 0.5 }}
+                />
+                
+                {/* Highlighted shortest route (bright blue with glow) - from driver to destination */}
+                <motion.path
+                  d={pathD}
+                  fill="none"
+                  stroke="#1E90FF"
+                  strokeWidth="8"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  style={{ filter: 'drop-shadow(0 0 6px #1E90FF)' }}
+                  initial={{ pathLength: 0 }}
+                  animate={{ pathLength: 1 }}
+                  transition={{ duration: 0.5 }}
+                />
+              </>
+            );
+          })()}
         </svg>
 
         {/* Current Location Pin */}
