@@ -58,6 +58,7 @@ export default function MapNavigation() {
   const [proofStep, setProofStep] = useState<'otp' | 'camera'>('otp');
   const [otpValue, setOtpValue] = useState('');
   const [capturedPhoto, setCapturedPhoto] = useState(false);
+  const [isCapturing, setIsCapturing] = useState(false);
 
   const { data: trip } = useQuery<UpcomingTrip>({
     queryKey: [`/api/upcoming-trips/${tripId}`],
@@ -133,7 +134,11 @@ export default function MapNavigation() {
   };
   
   const handleCameraCapture = () => {
-    setCapturedPhoto(true);
+    setIsCapturing(true);
+    setTimeout(() => {
+      setIsCapturing(false);
+      setCapturedPhoto(true);
+    }, 2000);
   };
   
   const handleGoToNextStop = () => {
@@ -553,7 +558,80 @@ export default function MapNavigation() {
           ) : (
             <div className="space-y-6 py-4">
               <div className="flex flex-col items-center justify-center gap-4 py-8">
-                {!capturedPhoto ? (
+                {isCapturing ? (
+                  <motion.div className="relative flex flex-col items-center gap-4">
+                    {/* Camera shutter animation */}
+                    <motion.div
+                      className="relative w-40 h-40 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center overflow-hidden"
+                      initial={{ scale: 1 }}
+                      animate={{ scale: [1, 1.1, 1] }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <Camera className="w-20 h-20 text-white" />
+                      
+                      {/* Shutter effect */}
+                      <motion.div
+                        className="absolute inset-0 bg-white"
+                        initial={{ opacity: 0 }}
+                        animate={{ 
+                          opacity: [0, 1, 0],
+                        }}
+                        transition={{ 
+                          duration: 0.3,
+                          times: [0, 0.5, 1]
+                        }}
+                      />
+                      
+                      {/* Flash rings */}
+                      <motion.div
+                        className="absolute inset-0 rounded-2xl border-4 border-white"
+                        initial={{ scale: 1, opacity: 1 }}
+                        animate={{ 
+                          scale: [1, 1.5, 2],
+                          opacity: [1, 0.5, 0]
+                        }}
+                        transition={{ duration: 1 }}
+                      />
+                      <motion.div
+                        className="absolute inset-0 rounded-2xl border-4 border-cyan-300"
+                        initial={{ scale: 1, opacity: 1 }}
+                        animate={{ 
+                          scale: [1, 1.5, 2],
+                          opacity: [1, 0.5, 0]
+                        }}
+                        transition={{ duration: 1, delay: 0.2 }}
+                      />
+                    </motion.div>
+                    
+                    <motion.p
+                      className="text-lg font-semibold text-blue-600"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.3 }}
+                    >
+                      Processing image...
+                    </motion.p>
+                    
+                    {/* Loading dots */}
+                    <div className="flex gap-2">
+                      {[0, 1, 2].map((i) => (
+                        <motion.div
+                          key={i}
+                          className="w-3 h-3 bg-blue-500 rounded-full"
+                          animate={{
+                            y: [0, -10, 0],
+                            opacity: [0.5, 1, 0.5]
+                          }}
+                          transition={{
+                            duration: 0.6,
+                            repeat: Infinity,
+                            delay: i * 0.2
+                          }}
+                        />
+                      ))}
+                    </div>
+                  </motion.div>
+                ) : !capturedPhoto ? (
                   <>
                     <motion.div
                       className="relative w-40 h-40 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center"
@@ -575,6 +653,7 @@ export default function MapNavigation() {
                       size="lg"
                       className="gap-2"
                       data-testid="button-capture-photo"
+                      disabled={isCapturing}
                     >
                       <Camera className="w-5 h-5" />
                       Capture Photo
