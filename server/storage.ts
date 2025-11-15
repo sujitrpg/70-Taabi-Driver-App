@@ -941,6 +941,116 @@ export class MemStorage implements IStorage {
       const template = { ...c, id: randomUUID() };
       this.checklistTemplates.set(template.id, template);
     });
+
+    // Seed upcoming trips with delivery points
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow.setHours(7, 0, 0, 0);
+
+    const dayAfterTomorrow = new Date();
+    dayAfterTomorrow.setDate(dayAfterTomorrow.getDate() + 2);
+    dayAfterTomorrow.setHours(9, 0, 0, 0);
+
+    // Trip 1: Delhi City Route - 8 stops
+    const trip1Id = randomUUID();
+    const trip1: UpcomingTrip = {
+      id: trip1Id,
+      driverId: "default-driver-1",
+      completedTripId: null,
+      title: "Delhi City Distribution",
+      scheduledTime: tomorrow,
+      startLocation: "Azadpur Mandi Warehouse",
+      startLat: 28.7041,
+      startLng: 77.1025,
+      endLocation: "Nehru Place Depot",
+      endLat: 28.5494,
+      endLng: 77.2505,
+      status: "upcoming",
+      currentStopIndex: 0,
+      startedAt: null,
+      completedAt: null,
+      notes: null,
+      createdAt: new Date(),
+    };
+    this.upcomingTrips.set(trip1Id, trip1);
+
+    const trip1Points: InsertDeliveryPoint[] = [
+      { tripId: trip1Id, orderIndex: 0, locationType: "warehouse", name: "Azadpur Mandi", address: "Azadpur Agricultural Produce Market, Delhi", latitude: 28.7041, longitude: 77.1025, plannedArrival: null, plannedDeparture: null, instructions: "Pick up fresh produce", contactPhone: "+91-11-27675050", status: "pending", completedAt: null },
+      { tripId: trip1Id, orderIndex: 1, locationType: "shop", name: "Rajouri Garden Store", address: "Shop 45, Rajouri Garden, Delhi", latitude: 28.6409, longitude: 77.1211, plannedArrival: null, plannedDeparture: null, instructions: "Deliver 50 crates", contactPhone: "+91-9876543001", status: "pending", completedAt: null },
+      { tripId: trip1Id, orderIndex: 2, locationType: "shop", name: "Karol Bagh Market", address: "Pusa Road, Karol Bagh, Delhi", latitude: 28.6519, longitude: 77.1903, plannedArrival: null, plannedDeparture: null, instructions: "Deliver 30 crates", contactPhone: "+91-9876543002", status: "pending", completedAt: null },
+      { tripId: trip1Id, orderIndex: 3, locationType: "shop", name: "Connaught Place Outlet", address: "CP Inner Circle, New Delhi", latitude: 28.6315, longitude: 77.2167, plannedArrival: null, plannedDeparture: null, instructions: "Premium delivery - handle with care", contactPhone: "+91-9876543003", status: "pending", completedAt: null },
+      { tripId: trip1Id, orderIndex: 4, locationType: "shop", name: "Lajpat Nagar Market", address: "Lajpat Nagar Central Market, Delhi", latitude: 28.5678, longitude: 77.2431, plannedArrival: null, plannedDeparture: null, instructions: "Deliver 40 crates", contactPhone: "+91-9876543004", status: "pending", completedAt: null },
+      { tripId: trip1Id, orderIndex: 5, locationType: "shop", name: "Saket Select City Walk", address: "Saket Mall, Delhi", latitude: 28.5244, longitude: 77.2066, plannedArrival: null, plannedDeparture: null, instructions: "Use loading dock B", contactPhone: "+91-9876543005", status: "pending", completedAt: null },
+      { tripId: trip1Id, orderIndex: 6, locationType: "factory", name: "Okhla Industrial Area", address: "Phase 1, Okhla Industrial Estate", latitude: 28.5355, longitude: 77.2765, plannedArrival: null, plannedDeparture: null, instructions: "Collect empty crates", contactPhone: "+91-9876543006", status: "pending", completedAt: null },
+      { tripId: trip1Id, orderIndex: 7, locationType: "warehouse", name: "Nehru Place Depot", address: "Nehru Place, South Delhi", latitude: 28.5494, longitude: 77.2505, plannedArrival: null, plannedDeparture: null, instructions: "Final drop and inspection", contactPhone: "+91-11-26431234", status: "pending", completedAt: null },
+    ];
+    trip1Points.forEach((p) => {
+      const point: DeliveryPoint = { 
+        ...p, 
+        id: randomUUID(),
+        status: p.status || "pending",
+        plannedArrival: p.plannedArrival ?? null,
+        plannedDeparture: p.plannedDeparture ?? null,
+        instructions: p.instructions ?? null,
+        contactPhone: p.contactPhone ?? null,
+        completedAt: p.completedAt ?? null
+      };
+      this.deliveryPoints.set(point.id, point);
+    });
+
+    // Trip 2: Mumbai Dense Urban Route - 15 stops
+    const trip2Id = randomUUID();
+    const trip2: UpcomingTrip = {
+      id: trip2Id,
+      driverId: "default-driver-1",
+      completedTripId: null,
+      title: "Mumbai Express Delivery",
+      scheduledTime: dayAfterTomorrow,
+      startLocation: "JNPT Port Warehouse",
+      startLat: 18.9526,
+      startLng: 72.9498,
+      endLocation: "Goregaon Logistics Hub",
+      endLat: 19.1663,
+      endLng: 72.8526,
+      status: "upcoming",
+      currentStopIndex: 0,
+      startedAt: null,
+      completedAt: null,
+      notes: null,
+      createdAt: new Date(),
+    };
+    this.upcomingTrips.set(trip2Id, trip2);
+
+    const trip2Points: InsertDeliveryPoint[] = [
+      { tripId: trip2Id, orderIndex: 0, locationType: "warehouse", name: "JNPT Port", address: "Jawaharlal Nehru Port, Navi Mumbai", latitude: 18.9526, longitude: 72.9498, plannedArrival: null, plannedDeparture: null, instructions: "Collect import containers", contactPhone: "+91-22-27244000", status: "pending", completedAt: null },
+      { tripId: trip2Id, orderIndex: 1, locationType: "warehouse", name: "Vashi Hub", address: "Turbhe MIDC, Navi Mumbai", latitude: 19.0330, longitude: 73.0297, plannedArrival: null, plannedDeparture: null, instructions: "Transfer 20 boxes", contactPhone: "+91-9876543011", status: "pending", completedAt: null },
+      { tripId: trip2Id, orderIndex: 2, locationType: "shop", name: "Panvel Market", address: "New Panvel East, Navi Mumbai", latitude: 19.0147, longitude: 73.1200, plannedArrival: null, plannedDeparture: null, instructions: "Deliver electronics", contactPhone: "+91-9876543012", status: "pending", completedAt: null },
+      { tripId: trip2Id, orderIndex: 3, locationType: "shop", name: "Kurla West Store", address: "LBS Marg, Kurla West", latitude: 19.0728, longitude: 72.8826, plannedArrival: null, plannedDeparture: null, instructions: "Unload 15 boxes", contactPhone: "+91-9876543013", status: "pending", completedAt: null },
+      { tripId: trip2Id, orderIndex: 4, locationType: "shop", name: "Bandra Linking Road", address: "Linking Road, Bandra West", latitude: 19.0596, longitude: 72.8295, plannedArrival: null, plannedDeparture: null, instructions: "Premium delivery", contactPhone: "+91-9876543014", status: "pending", completedAt: null },
+      { tripId: trip2Id, orderIndex: 5, locationType: "shop", name: "Andheri Phoenix Mall", address: "High Street Phoenix, Andheri", latitude: 19.0892, longitude: 72.8842, plannedArrival: null, plannedDeparture: null, instructions: "Use mall entrance 3", contactPhone: "+91-9876543015", status: "pending", completedAt: null },
+      { tripId: trip2Id, orderIndex: 6, locationType: "home", name: "Powai Residential", address: "Hiranandani Gardens, Powai", latitude: 19.1176, longitude: 72.9060, plannedArrival: null, plannedDeparture: null, instructions: "Home delivery - call before arrival", contactPhone: "+91-9876543016", status: "pending", completedAt: null },
+      { tripId: trip2Id, orderIndex: 7, locationType: "factory", name: "Vikhroli Industrial", address: "MIDC, Vikhroli East", latitude: 19.1058, longitude: 72.9387, plannedArrival: null, plannedDeparture: null, instructions: "Factory gate 2", contactPhone: "+91-9876543017", status: "pending", completedAt: null },
+      { tripId: trip2Id, orderIndex: 8, locationType: "shop", name: "Mulund Market", address: "LBS Marg, Mulund West", latitude: 19.1722, longitude: 72.9569, plannedArrival: null, plannedDeparture: null, instructions: "Deliver 25 units", contactPhone: "+91-9876543018", status: "pending", completedAt: null },
+      { tripId: trip2Id, orderIndex: 9, locationType: "shop", name: "Thane Station Road", address: "Station Road, Thane East", latitude: 19.1826, longitude: 72.9780, plannedArrival: null, plannedDeparture: null, instructions: "Morning delivery preferred", contactPhone: "+91-9876543019", status: "pending", completedAt: null },
+      { tripId: trip2Id, orderIndex: 10, locationType: "home", name: "Ghodbunder Road Villa", address: "Palm Beach Residency, Thane", latitude: 19.2403, longitude: 72.9724, plannedArrival: null, plannedDeparture: null, instructions: "Luxury home - careful handling", contactPhone: "+91-9876543020", status: "pending", completedAt: null },
+      { tripId: trip2Id, orderIndex: 11, locationType: "shop", name: "Borivali West Shop", address: "IC Colony, Borivali West", latitude: 19.2403, longitude: 72.8492, plannedArrival: null, plannedDeparture: null, instructions: "Deliver 18 boxes", contactPhone: "+91-9876543021", status: "pending", completedAt: null },
+      { tripId: trip2Id, orderIndex: 12, locationType: "shop", name: "Kandivali Market", address: "Mahavir Nagar, Kandivali West", latitude: 19.2094, longitude: 72.8507, plannedArrival: null, plannedDeparture: null, instructions: "Back entrance delivery", contactPhone: "+91-9876543022", status: "pending", completedAt: null },
+      { tripId: trip2Id, orderIndex: 13, locationType: "shop", name: "Malad Infinity Mall", address: "Link Road, Malad West", latitude: 19.1868, longitude: 72.8389, plannedArrival: null, plannedDeparture: null, instructions: "Loading bay C", contactPhone: "+91-9876543023", status: "pending", completedAt: null },
+      { tripId: trip2Id, orderIndex: 14, locationType: "warehouse", name: "Goregaon Logistics Hub", address: "Mindspace, Goregaon East", latitude: 19.1663, longitude: 72.8526, plannedArrival: null, plannedDeparture: null, instructions: "Final collection point", contactPhone: "+91-22-67890123", status: "pending", completedAt: null },
+    ];
+    trip2Points.forEach((p) => {
+      const point: DeliveryPoint = { 
+        ...p, 
+        id: randomUUID(),
+        status: p.status || "pending",
+        plannedArrival: p.plannedArrival ?? null,
+        plannedDeparture: p.plannedDeparture ?? null,
+        instructions: p.instructions ?? null,
+        contactPhone: p.contactPhone ?? null,
+        completedAt: p.completedAt ?? null
+      };
+      this.deliveryPoints.set(point.id, point);
+    });
   }
 }
 
