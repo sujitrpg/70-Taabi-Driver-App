@@ -887,11 +887,11 @@ export class MemStorage implements IStorage {
         ...a, 
         id: randomUUID(), 
         createdAt: new Date(),
-        latitude: a.latitude ?? null,
-        longitude: a.longitude ?? null,
-        reportedBy: a.reportedBy ?? null,
-        expiresAt: a.expiresAt ?? null,
-        isActive: a.isActive ?? true
+        latitude: a.latitude || null,
+        longitude: a.longitude || null,
+        reportedBy: a.reportedBy || null,
+        expiresAt: a.expiresAt || null,
+        isActive: a.isActive || true
       };
       this.roadAlerts.set(alert.id, alert);
     });
@@ -910,9 +910,9 @@ export class MemStorage implements IStorage {
         ...v, 
         id: randomUUID(), 
         createdAt: new Date(),
-        thumbnailUrl: v.thumbnailUrl ?? null,
-        videoUrl: v.videoUrl ?? null,
-        pointsReward: v.pointsReward ?? 10
+        thumbnailUrl: v.thumbnailUrl || null,
+        videoUrl: v.videoUrl || null,
+        pointsReward: v.pointsReward || 10
       };
       this.learningVideos.set(video.id, video);
     });
@@ -1123,16 +1123,27 @@ export class MemStorage implements IStorage {
     };
     this.upcomingTrips.set(trip4Id, trip4);
 
-    const trip4Points: Omit<DeliveryPoint, "id">[] = [
-      { tripId: trip4Id, address: "Chennai Port Container Terminal", lat: 13.0627, lng: 80.2809, locationType: "warehouse", contactPerson: "Karthik Ramesh", contactPhone: "+91-9876543216", otp: "9012", status: "pending", sequence: 1, estimatedArrival: null, actualArrival: null, deliveryProof: null },
-      { tripId: trip4Id, address: "Tidel Park, Taramani", lat: 12.9941, lng: 80.2456, locationType: "office", contactPerson: "Lakshmi Narayanan", contactPhone: "+91-9876543217", otp: "3456", status: "pending", sequence: 2, estimatedArrival: null, actualArrival: null, deliveryProof: null },
-      { tripId: trip4Id, address: "DLF IT Park, Ramapuram", lat: 13.0338, lng: 80.1821, locationType: "office", contactPerson: "Suresh Babu", contactPhone: "+91-9876543218", otp: "7890", status: "pending", sequence: 3, estimatedArrival: null, actualArrival: null, deliveryProof: null },
-      { tripId: trip4Id, address: "Ascendas IT Park, Porur", lat: 13.0358, lng: 80.1568, locationType: "office", contactPerson: "Divya Krishnan", contactPhone: "+91-9876543219", otp: "2345", status: "pending", sequence: 4, estimatedArrival: null, actualArrival: null, deliveryProof: null },
-      { tripId: trip4Id, address: "Mahindra World City, Chengalpattu", lat: 12.7425, lng: 79.9763, locationType: "warehouse", contactPerson: "Ravi Chandran", contactPhone: "+91-9876543220", otp: "6789", status: "pending", sequence: 5, estimatedArrival: null, actualArrival: null, deliveryProof: null },
+    const trip4Points: InsertDeliveryPoint[] = [
+      { tripId: trip4Id, orderIndex: 0, locationType: "warehouse", name: "Whitefield Logistics Hub", address: "ITPL Main Road, Whitefield, Bangalore", latitude: 12.9698, longitude: 77.7499, plannedArrival: null, plannedDeparture: null, instructions: "Load IT equipment for delivery", contactPhone: "+91-80-28451234", status: "pending", completedAt: null },
+      { tripId: trip4Id, orderIndex: 1, locationType: "factory", name: "Peenya Industrial Area", address: "Peenya 4th Phase, Bangalore", latitude: 13.0297, longitude: 77.5202, plannedArrival: null, plannedDeparture: null, instructions: "Pick up manufactured components", contactPhone: "+91-9876543230", status: "pending", completedAt: null },
+      { tripId: trip4Id, orderIndex: 2, locationType: "shop", name: "Indiranagar Tech Store", address: "100 Feet Road, Indiranagar, Bangalore", latitude: 12.9716, longitude: 77.6412, plannedArrival: null, plannedDeparture: null, instructions: "Deliver 20 boxes - signature required", contactPhone: "+91-9876543231", status: "pending", completedAt: null },
+      { tripId: trip4Id, orderIndex: 3, locationType: "shop", name: "Koramangala Retail Center", address: "80 Feet Road, Koramangala, Bangalore", latitude: 12.9352, longitude: 77.6245, plannedArrival: null, plannedDeparture: null, instructions: "Deliver electronics - handle with care", contactPhone: "+91-9876543232", status: "pending", completedAt: null },
+      { tripId: trip4Id, orderIndex: 4, locationType: "shop", name: "Jayanagar Shopping Complex", address: "4th Block, Jayanagar, Bangalore", latitude: 12.9250, longitude: 77.5937, plannedArrival: null, plannedDeparture: null, instructions: "Deliver 35 boxes via loading dock", contactPhone: "+91-9876543233", status: "pending", completedAt: null },
+      { tripId: trip4Id, orderIndex: 5, locationType: "factory", name: "Electronic City Phase 1", address: "Hosur Road, Electronic City, Bangalore", latitude: 12.8456, longitude: 77.6603, plannedArrival: null, plannedDeparture: null, instructions: "Collect empty containers", contactPhone: "+91-9876543234", status: "pending", completedAt: null },
+      { tripId: trip4Id, orderIndex: 6, locationType: "warehouse", name: "Bommanahalli Distribution Center", address: "Hosur Road, Bommanahalli, Bangalore", latitude: 12.9116, longitude: 77.6370, plannedArrival: null, plannedDeparture: null, instructions: "Final drop and inventory check", contactPhone: "+91-80-26785678", status: "pending", completedAt: null },
     ];
-    trip4Points.forEach(point => {
-      const id = randomUUID();
-      this.deliveryPoints.set(id, { ...point, id });
+    trip4Points.forEach((p) => {
+      const point: DeliveryPoint = { 
+        ...p, 
+        id: randomUUID(),
+        status: p.status || "pending",
+        plannedArrival: p.plannedArrival || null,
+        plannedDeparture: p.plannedDeparture || null,
+        instructions: p.instructions || null,
+        contactPhone: p.contactPhone || null,
+        completedAt: p.completedAt || null,
+      };
+      this.deliveryPoints.set(point.id, point);
     });
   }
 }
