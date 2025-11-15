@@ -24,7 +24,7 @@ import { useQuery } from "@tanstack/react-query";
 import type { UpcomingTrip, DeliveryPoint } from "@shared/schema";
 import { format } from "date-fns";
 import shubhamImage from "@/assets/images/shubham.jpeg";
-import prakharPhotoAttached from "/attached_assets/1586702192238_1763053351246.jpeg";
+import prakharPhotoAttached from "@assets/1586702192238_1763053351246.jpeg";
 
 export default function Dashboard() {
   const [, setLocation] = useLocation();
