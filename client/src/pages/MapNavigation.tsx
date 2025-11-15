@@ -100,6 +100,14 @@ export default function MapNavigation() {
         setSimulatedProgress(0);
       }
     },
+    onError: (error: any) => {
+      setCapturedPhoto(false);
+      toast({
+        title: "Error Completing Stop",
+        description: error.message || "Failed to complete delivery. Please try again.",
+        variant: "destructive",
+      });
+    },
   });
   
   const handleCompleteStopClick = () => {
