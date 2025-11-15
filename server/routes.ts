@@ -10,7 +10,9 @@ import {
   insertFatigueCheckInSchema,
   insertRoadAlertSchema,
   insertVideoCompletionSchema,
-  insertChecklistCompletionSchema
+  insertChecklistCompletionSchema,
+  insertUpcomingTripSchema,
+  insertDeliveryPointSchema
 } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -629,6 +631,133 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const completions = await storage.getChecklistCompletionsByTrip(req.params.tripId);
       res.json(completions);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // ============ UPCOMING TRIPS ============
+  app.post("/api/upcoming-trips", async (req, res) => {
+    try {
+      const validatedData = insertUpcomingTripSchema.parse(req.body);
+      const trip = await storage.createUpcomingTrip(validatedData);
+      res.json(trip);
+    } catch (error: any) {
+      res.status(400).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/upcoming-trips/:id", async (req, res) => {
+    try {
+      const trip = await storage.getUpcomingTrip(req.params.id);
+      if (!trip) {
+        return res.status(404).json({ error: "Trip not found" });
+      }
+      res.json(trip);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/upcoming-trips/driver/:driverId", async (req, res) => {
+    try {
+      const trips = await storage.getUpcomingTripsByDriver(req.params.driverId);
+      res.json(trips);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.put("/api/upcoming-trips/:id", async (req, res) => {
+    try {
+      const trip = await storage.updateUpcomingTrip(req.params.id, req.body);
+      if (!trip) {
+        return res.status(404).json({ error: "Trip not found" });
+      }
+      res.json(trip);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.put("/api/upcoming-trips/:id/start", async (req, res) => {
+    try {
+      const trip = await storage.updateUpcomingTrip(req.params.id, {
+        status: "in_progress",
+        startedAt: new Date(),
+      });
+      if (!trip) {
+        return res.status(404).json({ error: "Trip not found" });
+      }
+      res.json(trip);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.put("/api/upcoming-trips/:id/complete-stop", async (req, res) => {
+    try {
+      const trip = await storage.getUpcomingTrip(req.params.id);
+      if (!trip) {
+        return res.status(404).json({ error: "Trip not found" });
+      }
+
+      const deliveryPoints = await storage.getDeliveryPointsByTrip(req.params.id);
+      const currentPoint = deliveryPoints[trip.currentStopIndex];
+
+      if (currentPoint) {
+        // Mark current point as completed
+        await storage.updateDeliveryPoint(currentPoint.id, {
+          status: "completed",
+          completedAt: new Date(),
+        });
+
+        // Move to next stop
+        const nextStopIndex = trip.currentStopIndex + 1;
+        const allCompleted = nextStopIndex >= deliveryPoints.length;
+
+        const updated = await storage.updateUpcomingTrip(req.params.id, {
+          currentStopIndex: nextStopIndex,
+          status: allCompleted ? "completed" : "in_progress",
+          completedAt: allCompleted ? new Date() : undefined,
+        });
+
+        res.json({ trip: updated, currentPoint, allCompleted });
+      } else {
+        res.status(400).json({ error: "No delivery point to complete" });
+      }
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // ============ DELIVERY POINTS ============
+  app.post("/api/delivery-points", async (req, res) => {
+    try {
+      const validatedData = insertDeliveryPointSchema.parse(req.body);
+      const point = await storage.createDeliveryPoint(validatedData);
+      res.json(point);
+    } catch (error: any) {
+      res.status(400).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/delivery-points/trip/:tripId", async (req, res) => {
+    try {
+      const points = await storage.getDeliveryPointsByTrip(req.params.tripId);
+      res.json(points);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.put("/api/delivery-points/:id", async (req, res) => {
+    try {
+      const point = await storage.updateDeliveryPoint(req.params.id, req.body);
+      if (!point) {
+        return res.status(404).json({ error: "Delivery point not found" });
+      }
+      res.json(point);
     } catch (error: any) {
       res.status(500).json({ error: error.message });
     }
