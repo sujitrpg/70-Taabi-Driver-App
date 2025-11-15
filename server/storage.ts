@@ -36,6 +36,10 @@ import type {
   InsertChecklistTemplate,
   ChecklistCompletion,
   InsertChecklistCompletion,
+  UpcomingTrip,
+  InsertUpcomingTrip,
+  DeliveryPoint,
+  InsertDeliveryPoint,
 } from "@shared/schema";
 
 export interface IStorage {
@@ -122,6 +126,17 @@ export interface IStorage {
   completeChecklist(completion: InsertChecklistCompletion): Promise<ChecklistCompletion>;
   getChecklistCompletionsByDriver(driverId: string): Promise<ChecklistCompletion[]>;
   getChecklistCompletionsByTrip(tripId: string): Promise<ChecklistCompletion[]>;
+
+  // Upcoming Trips
+  createUpcomingTrip(trip: InsertUpcomingTrip): Promise<UpcomingTrip>;
+  getUpcomingTrip(id: string): Promise<UpcomingTrip | undefined>;
+  getUpcomingTripsByDriver(driverId: string): Promise<UpcomingTrip[]>;
+  updateUpcomingTrip(id: string, updates: Partial<UpcomingTrip>): Promise<UpcomingTrip | undefined>;
+
+  // Delivery Points
+  createDeliveryPoint(point: InsertDeliveryPoint): Promise<DeliveryPoint>;
+  getDeliveryPointsByTrip(tripId: string): Promise<DeliveryPoint[]>;
+  updateDeliveryPoint(id: string, updates: Partial<DeliveryPoint>): Promise<DeliveryPoint | undefined>;
 }
 
 export class MemStorage implements IStorage {
@@ -143,6 +158,8 @@ export class MemStorage implements IStorage {
   private videoCompletions: Map<string, VideoCompletion>;
   private checklistTemplates: Map<string, ChecklistTemplate>;
   private checklistCompletions: Map<string, ChecklistCompletion>;
+  private upcomingTrips: Map<string, UpcomingTrip>;
+  private deliveryPoints: Map<string, DeliveryPoint>;
 
   constructor() {
     this.drivers = new Map();
@@ -163,6 +180,8 @@ export class MemStorage implements IStorage {
     this.videoCompletions = new Map();
     this.checklistTemplates = new Map();
     this.checklistCompletions = new Map();
+    this.upcomingTrips = new Map();
+    this.deliveryPoints = new Map();
     this.seedData();
   }
 
@@ -209,6 +228,7 @@ export class MemStorage implements IStorage {
     const trip: Trip = {
       ...insertTrip,
       id,
+      upcomingTripId: insertTrip.upcomingTripId || null,
       waypoints: insertTrip.waypoints || [],
       status: insertTrip.status || "active",
       fuelEfficiency: insertTrip.fuelEfficiency || null,
@@ -619,6 +639,73 @@ export class MemStorage implements IStorage {
     return Array.from(this.checklistCompletions.values())
       .filter((c) => c.tripId === tripId)
       .sort((a, b) => b.completedAt.getTime() - a.completedAt.getTime());
+  }
+
+  // Upcoming Trips
+  async createUpcomingTrip(insertTrip: InsertUpcomingTrip): Promise<UpcomingTrip> {
+    const id = randomUUID();
+    const trip: UpcomingTrip = {
+      ...insertTrip,
+      id,
+      completedTripId: insertTrip.completedTripId || null,
+      status: insertTrip.status || "upcoming",
+      currentStopIndex: insertTrip.currentStopIndex || 0,
+      startedAt: insertTrip.startedAt || null,
+      completedAt: insertTrip.completedAt || null,
+      notes: insertTrip.notes || null,
+      createdAt: new Date(),
+    };
+    this.upcomingTrips.set(id, trip);
+    return trip;
+  }
+
+  async getUpcomingTrip(id: string): Promise<UpcomingTrip | undefined> {
+    return this.upcomingTrips.get(id);
+  }
+
+  async getUpcomingTripsByDriver(driverId: string): Promise<UpcomingTrip[]> {
+    return Array.from(this.upcomingTrips.values())
+      .filter((t) => t.driverId === driverId && t.status !== "completed")
+      .sort((a, b) => a.scheduledTime.getTime() - b.scheduledTime.getTime());
+  }
+
+  async updateUpcomingTrip(id: string, updates: Partial<UpcomingTrip>): Promise<UpcomingTrip | undefined> {
+    const trip = this.upcomingTrips.get(id);
+    if (!trip) return undefined;
+    const updated = { ...trip, ...updates };
+    this.upcomingTrips.set(id, updated);
+    return updated;
+  }
+
+  // Delivery Points
+  async createDeliveryPoint(insertPoint: InsertDeliveryPoint): Promise<DeliveryPoint> {
+    const id = randomUUID();
+    const point: DeliveryPoint = {
+      ...insertPoint,
+      id,
+      plannedArrival: insertPoint.plannedArrival || null,
+      plannedDeparture: insertPoint.plannedDeparture || null,
+      instructions: insertPoint.instructions || null,
+      contactPhone: insertPoint.contactPhone || null,
+      status: insertPoint.status || "pending",
+      completedAt: insertPoint.completedAt || null,
+    };
+    this.deliveryPoints.set(id, point);
+    return point;
+  }
+
+  async getDeliveryPointsByTrip(tripId: string): Promise<DeliveryPoint[]> {
+    return Array.from(this.deliveryPoints.values())
+      .filter((p) => p.tripId === tripId)
+      .sort((a, b) => a.orderIndex - b.orderIndex);
+  }
+
+  async updateDeliveryPoint(id: string, updates: Partial<DeliveryPoint>): Promise<DeliveryPoint | undefined> {
+    const point = this.deliveryPoints.get(id);
+    if (!point) return undefined;
+    const updated = { ...point, ...updates };
+    this.deliveryPoints.set(id, updated);
+    return updated;
   }
 
   private seedData() {

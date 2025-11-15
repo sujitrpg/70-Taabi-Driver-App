@@ -28,6 +28,7 @@ export type Driver = typeof drivers.$inferSelect;
 export const trips = pgTable("trips", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   driverId: varchar("driver_id").notNull().references(() => drivers.id),
+  upcomingTripId: varchar("upcoming_trip_id"), // Link to the upcoming trip that generated this
   origin: text("origin").notNull(),
   destination: text("destination").notNull(),
   waypoints: text("waypoints").array(),
@@ -367,6 +368,7 @@ export type ChecklistCompletion = typeof checklistCompletions.$inferSelect;
 export const upcomingTrips = pgTable("upcoming_trips", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   driverId: varchar("driver_id").notNull().references(() => drivers.id),
+  completedTripId: varchar("completed_trip_id"), // Link to completed trip record
   title: text("title").notNull(),
   scheduledTime: timestamp("scheduled_time").notNull(),
   startLocation: text("start_location").notNull(),
@@ -375,9 +377,11 @@ export const upcomingTrips = pgTable("upcoming_trips", {
   endLocation: text("end_location").notNull(),
   endLat: real("end_lat").notNull(),
   endLng: real("end_lng").notNull(),
-  totalStops: integer("total_stops").notNull(),
   status: text("status").notNull().default("upcoming"), // upcoming, in_progress, completed
   currentStopIndex: integer("current_stop_index").notNull().default(0),
+  startedAt: timestamp("started_at"),
+  completedAt: timestamp("completed_at"),
+  notes: text("notes"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
@@ -399,9 +403,15 @@ export const deliveryPoints = pgTable("delivery_points", {
   address: text("address").notNull(),
   latitude: real("latitude").notNull(),
   longitude: real("longitude").notNull(),
+  plannedArrival: timestamp("planned_arrival"),
+  plannedDeparture: timestamp("planned_departure"),
+  instructions: text("instructions"), // Special delivery instructions
+  contactPhone: text("contact_phone"), // Contact at this location
   status: text("status").notNull().default("pending"), // pending, in_progress, completed
   completedAt: timestamp("completed_at"),
-});
+}, (table) => ({
+  uniqueTripOrder: sql`UNIQUE (${table.tripId}, ${table.orderIndex})`,
+}));
 
 export const insertDeliveryPointSchema = createInsertSchema(deliveryPoints).omit({
   id: true,
