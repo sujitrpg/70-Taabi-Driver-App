@@ -433,6 +433,7 @@ export default function MapNavigation() {
 
                 {currentPoint.instructions && (
                   <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+                    <p className="text-xs font-semibold text-amber-700 mb-2">Tasks to do:</p>
                     <p className="text-sm font-medium text-amber-900" data-testid="text-instructions">
                       {currentPoint.instructions}
                     </p>
@@ -447,7 +448,7 @@ export default function MapNavigation() {
                     data-testid="button-call-contact"
                   >
                     <Phone className="w-4 h-4" />
-                    Call {currentPoint.contactPhone}
+                    Call the Recipient
                   </Button>
                 )}
 
