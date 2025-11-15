@@ -790,7 +790,7 @@ export class MemStorage implements IStorage {
       { name: "Night Parking Hub", category: "parking", latitude: 19.0100, longitude: 72.7900, address: "NH-48, Dahisar", isVeg: null, isNonVeg: null, hasTruckParking: true, hygieneRating: null, isOpen: true, discount: null, imageUrl: null, verifiedBy: null },
     ];
     placeData.forEach((p) => {
-      const place = { 
+      const place: NearbyPlace = { 
         ...p, 
         id: randomUUID(), 
         createdAt: new Date(),
@@ -836,7 +836,7 @@ export class MemStorage implements IStorage {
       { title: "Truck Loan & Finance", description: "Low-interest loans for purchasing new trucks. Easy EMI options available.", category: "loan", contactNumber: "1800-567-8901", website: "https://truckfinance.com", iconName: "truck", isVerified: true },
     ];
     supportData.forEach((s) => {
-      const resource = { 
+      const resource: SupportResource = { 
         ...s, 
         id: randomUUID(),
         contactNumber: s.contactNumber ?? null,
@@ -860,7 +860,7 @@ export class MemStorage implements IStorage {
       { name: "Fast Tyre Fix", category: "puncture", latitude: 19.1250, longitude: 72.9250, address: "Thane-Belapur Road", isVeg: null, isNonVeg: null, hasTruckParking: true, hygieneRating: null, isOpen: true, discount: 15, imageUrl: null, verifiedBy: null },
     ];
     helpServiceData.forEach((p) => {
-      const place = { 
+      const place: NearbyPlace = { 
         ...p, 
         id: randomUUID(), 
         createdAt: new Date(),
@@ -883,7 +883,7 @@ export class MemStorage implements IStorage {
       { title: "Road Under Construction", description: "Single lane operation for next 5km. Expect delays.", alertType: "blocked_road", severity: "low", location: "NH-48, Kalyan", latitude: 19.2400, longitude: 73.1300, reportedBy: null, isActive: true, expiresAt: null },
     ];
     alertData.forEach((a) => {
-      const alert = { 
+      const alert: RoadAlert = { 
         ...a, 
         id: randomUUID(), 
         createdAt: new Date(),
@@ -906,7 +906,7 @@ export class MemStorage implements IStorage {
       { title: "Load Securing", description: "How to properly secure cargo to prevent accidents.", category: "maintenance", duration: 30, pointsReward: 15, thumbnailUrl: null, videoUrl: null, iconName: "package" },
     ];
     videoData.forEach((v) => {
-      const video = { 
+      const video: LearningVideo = { 
         ...v, 
         id: randomUUID(), 
         createdAt: new Date(),
@@ -950,7 +950,7 @@ export class MemStorage implements IStorage {
       },
     ];
     checklistData.forEach((c) => {
-      const template = { ...c, id: randomUUID() };
+      const template: ChecklistTemplate = { ...c, id: randomUUID() };
       this.checklistTemplates.set(template.id, template);
     });
 
@@ -1062,6 +1062,77 @@ export class MemStorage implements IStorage {
         completedAt: p.completedAt ?? null
       };
       this.deliveryPoints.set(point.id, point);
+    });
+
+    // Delivery points for Trip 3 (Bangalore - 6 stops)
+    const trip3Id = randomUUID();
+    const trip3: UpcomingTrip = {
+      id: trip3Id,
+      driverId: "default-driver-1",
+      completedTripId: null,
+      title: "Bangalore Corporate Deliveries",
+      scheduledTime: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3 days from now
+      startLocation: "Bangalore Airport Cargo",
+      startLat: 13.1986,
+      startLng: 77.7091,
+      endLocation: "Bangalore Central Distribution Center",
+      endLat: 12.9716,
+      endLng: 77.5946,
+      status: "upcoming",
+      currentStopIndex: 0,
+      startedAt: null,
+      completedAt: null,
+      notes: null,
+      createdAt: new Date(),
+    };
+    this.upcomingTrips.set(trip3Id, trip3);
+
+    const trip3Points: Omit<DeliveryPoint, "id">[] = [
+      { tripId: trip3Id, address: "Infosys Campus, Electronic City", lat: 12.8493, lng: 77.6649, locationType: "office", contactPerson: "Rajesh Kumar", contactPhone: "+91-9876543210", otp: "3456", status: "pending", sequence: 1, estimatedArrival: null, actualArrival: null, deliveryProof: null },
+      { tripId: trip3Id, address: "Wipro Corporate Office, Sarjapur", lat: 12.8893, lng: 77.7172, locationType: "office", contactPerson: "Priya Sharma", contactPhone: "+91-9876543211", otp: "7890", status: "pending", sequence: 2, estimatedArrival: null, actualArrival: null, deliveryProof: null },
+      { tripId: trip3Id, address: "Manyata Tech Park, Nagavara", lat: 13.0447, lng: 77.6200, locationType: "office", contactPerson: "Ankit Verma", contactPhone: "+91-9876543212", otp: "2345", status: "pending", sequence: 3, estimatedArrival: null, actualArrival: null, deliveryProof: null },
+      { tripId: trip3Id, address: "Prestige Tech Park, Marathahalli", lat: 12.9591, lng: 77.6974, locationType: "office", contactPerson: "Sneha Reddy", contactPhone: "+91-9876543213", otp: "6789", status: "pending", sequence: 4, estimatedArrival: null, actualArrival: null, deliveryProof: null },
+      { tripId: trip3Id, address: "RMZ Ecoworld, Bellandur", lat: 12.9250, lng: 77.6794, locationType: "office", contactPerson: "Vikram Singh", contactPhone: "+91-9876543214", otp: "1234", status: "pending", sequence: 5, estimatedArrival: null, actualArrival: null, deliveryProof: null },
+      { tripId: trip3Id, address: "Cessna Business Park, Kadubeesanahalli", lat: 12.9343, lng: 77.6906, locationType: "office", contactPerson: "Meera Iyer", contactPhone: "+91-9876543215", otp: "5678", status: "pending", sequence: 6, estimatedArrival: null, actualArrival: null, deliveryProof: null },
+    ];
+    trip3Points.forEach(point => {
+      const id = randomUUID();
+      this.deliveryPoints.set(id, { ...point, id });
+    });
+
+    // Delivery points for Trip 4 (Chennai - 5 stops)
+    const trip4Id = randomUUID();
+    const trip4: UpcomingTrip = {
+      id: trip4Id,
+      driverId: "default-driver-1",
+      completedTripId: null,
+      title: "Chennai Port Logistics",
+      scheduledTime: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000), // 4 days from now
+      startLocation: "Chennai International Airport Cargo",
+      startLat: 12.9960,
+      startLng: 80.1650,
+      endLocation: "Chennai Port Trust",
+      endLat: 13.0627,
+      endLng: 80.2809,
+      status: "upcoming",
+      currentStopIndex: 0,
+      startedAt: null,
+      completedAt: null,
+      notes: null,
+      createdAt: new Date(),
+    };
+    this.upcomingTrips.set(trip4Id, trip4);
+
+    const trip4Points: Omit<DeliveryPoint, "id">[] = [
+      { tripId: trip4Id, address: "Chennai Port Container Terminal", lat: 13.0627, lng: 80.2809, locationType: "warehouse", contactPerson: "Karthik Ramesh", contactPhone: "+91-9876543216", otp: "9012", status: "pending", sequence: 1, estimatedArrival: null, actualArrival: null, deliveryProof: null },
+      { tripId: trip4Id, address: "Tidel Park, Taramani", lat: 12.9941, lng: 80.2456, locationType: "office", contactPerson: "Lakshmi Narayanan", contactPhone: "+91-9876543217", otp: "3456", status: "pending", sequence: 2, estimatedArrival: null, actualArrival: null, deliveryProof: null },
+      { tripId: trip4Id, address: "DLF IT Park, Ramapuram", lat: 13.0338, lng: 80.1821, locationType: "office", contactPerson: "Suresh Babu", contactPhone: "+91-9876543218", otp: "7890", status: "pending", sequence: 3, estimatedArrival: null, actualArrival: null, deliveryProof: null },
+      { tripId: trip4Id, address: "Ascendas IT Park, Porur", lat: 13.0358, lng: 80.1568, locationType: "office", contactPerson: "Divya Krishnan", contactPhone: "+91-9876543219", otp: "2345", status: "pending", sequence: 4, estimatedArrival: null, actualArrival: null, deliveryProof: null },
+      { tripId: trip4Id, address: "Mahindra World City, Chengalpattu", lat: 12.7425, lng: 79.9763, locationType: "warehouse", contactPerson: "Ravi Chandran", contactPhone: "+91-9876543220", otp: "6789", status: "pending", sequence: 5, estimatedArrival: null, actualArrival: null, deliveryProof: null },
+    ];
+    trip4Points.forEach(point => {
+      const id = randomUUID();
+      this.deliveryPoints.set(id, { ...point, id });
     });
   }
 }

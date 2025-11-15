@@ -141,7 +141,7 @@ export default function Dashboard() {
             </Card>
           ) : (
             <div className="grid grid-cols-1 gap-4">
-              {upcomingTrips.map((trip) => {
+              {upcomingTrips.slice(0, 2).map((trip) => {
                 const stopCount = getDeliveryPointCount(trip.id);
                 const statusColors = {
                   upcoming: "from-blue-500 to-cyan-500",
