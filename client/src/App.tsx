@@ -20,6 +20,8 @@ import Wellness from "@/pages/Wellness";
 import SupportHub from "@/pages/SupportHub";
 import LearningHub from "@/pages/LearningHub";
 import TruckChecklist from "@/pages/TruckChecklist";
+import TripDetails from "@/pages/TripDetails";
+import MapNavigation from "@/pages/MapNavigation";
 import NotFound from "@/pages/not-found";
 
 function ProtectedRoute({ component: Component, path }: { component: any; path?: string }) {
@@ -43,7 +45,8 @@ function Router() {
   const [location] = useLocation();
   const { isAuthenticated } = useAuth();
   const hideNavPaths = ["/login", "/trip-summary"];
-  const showNav = !hideNavPaths.includes(location);
+  const hideNavForPattern = location.startsWith("/trip/") || location.startsWith("/navigate/");
+  const showNav = !hideNavPaths.includes(location) && !hideNavForPattern;
 
   return (
     <>
@@ -84,6 +87,12 @@ function Router() {
         </Route>
         <Route path="/checklist">
           <ProtectedRoute component={TruckChecklist} path="/checklist" />
+        </Route>
+        <Route path="/trip/:id">
+          <ProtectedRoute component={TripDetails} path="/trip/:id" />
+        </Route>
+        <Route path="/navigate/:id">
+          <ProtectedRoute component={MapNavigation} path="/navigate/:id" />
         </Route>
         <Route component={NotFound} />
       </Switch>

@@ -682,13 +682,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.put("/api/upcoming-trips/:id/start", async (req, res) => {
     try {
-      const trip = await storage.updateUpcomingTrip(req.params.id, {
-        status: "in_progress",
-        startedAt: new Date(),
-      });
-      if (!trip) {
+      const existingTrip = await storage.getUpcomingTrip(req.params.id);
+      if (!existingTrip) {
         return res.status(404).json({ error: "Trip not found" });
       }
+
+      // Only reset if trip was previously completed (restart scenario)
+      const isRestart = existingTrip.status === "completed";
+
+      if (isRestart) {
+        // Reset all delivery points to pending
+        const deliveryPoints = await storage.getDeliveryPointsByTrip(req.params.id);
+        await Promise.all(
+          deliveryPoints.map(point => 
+            storage.updateDeliveryPoint(point.id, {
+              status: "pending",
+              completedAt: null,
+            })
+          )
+        );
+      }
+
+      // Build trip updates
+      const tripUpdates: Partial<UpcomingTrip> = {
+        status: "in_progress",
+        completedAt: null,
+      };
+
+      // Set fresh startedAt when starting a new trip or restarting a completed one
+      if (existingTrip.status === "upcoming" || isRestart) {
+        tripUpdates.startedAt = new Date();
+      }
+
+      // Reset currentStopIndex when restarting a completed trip
+      if (isRestart) {
+        tripUpdates.currentStopIndex = 0;
+      }
+
+      const trip = await storage.updateUpcomingTrip(req.params.id, tripUpdates);
+
       res.json(trip);
     } catch (error: any) {
       res.status(500).json({ error: error.message });
@@ -716,11 +748,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const nextStopIndex = trip.currentStopIndex + 1;
         const allCompleted = nextStopIndex >= deliveryPoints.length;
 
-        const updated = await storage.updateUpcomingTrip(req.params.id, {
+        const tripUpdates: Partial<UpcomingTrip> = {
           currentStopIndex: nextStopIndex,
           status: allCompleted ? "completed" : "in_progress",
-          completedAt: allCompleted ? new Date() : undefined,
-        });
+        };
+
+        if (allCompleted) {
+          tripUpdates.completedAt = new Date();
+        }
+
+        const updated = await storage.updateUpcomingTrip(req.params.id, tripUpdates);
 
         res.json({ trip: updated, currentPoint, allCompleted });
       } else {
@@ -732,6 +769,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // ============ DELIVERY POINTS ============
+  app.get("/api/delivery-points", async (req, res) => {
+    try {
+      const points = await storage.getAllDeliveryPoints();
+      res.json(points);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   app.post("/api/delivery-points", async (req, res) => {
     try {
       const validatedData = insertDeliveryPointSchema.parse(req.body);

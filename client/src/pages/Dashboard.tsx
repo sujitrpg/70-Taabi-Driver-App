@@ -17,15 +17,31 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Map, MapPin, Gift, Users, TrendingUp, Award, AlertTriangle, Phone, Heart, HandHeart, GraduationCap, ClipboardCheck, Zap, Star } from "lucide-react";
+import { Map, MapPin, Gift, Users, TrendingUp, Award, AlertTriangle, Phone, Heart, HandHeart, GraduationCap, ClipboardCheck, Zap, Star, Truck, Calendar, MapPinned } from "lucide-react";
 import { useLocation } from "wouter";
 import { useToast } from "@/hooks/use-toast";
+import { useQuery } from "@tanstack/react-query";
+import type { UpcomingTrip, DeliveryPoint } from "@shared/schema";
+import { format } from "date-fns";
 import shubhamImage from "@/assets/images/shubham.jpeg";
 
 export default function Dashboard() {
   const [, setLocation] = useLocation();
   const [sosDialogOpen, setSosDialogOpen] = useState(false);
   const { toast } = useToast();
+
+  const { data: upcomingTrips = [], isLoading: tripsLoading } = useQuery<UpcomingTrip[]>({
+    queryKey: ["/api/upcoming-trips/driver/default-driver-1"],
+  });
+
+  const { data: allDeliveryPoints = [] } = useQuery<DeliveryPoint[]>({
+    queryKey: ["/api/delivery-points"],
+    enabled: upcomingTrips.length > 0,
+  });
+
+  const getDeliveryPointCount = (tripId: string) => {
+    return allDeliveryPoints.filter(p => p.tripId === tripId).length;
+  };
 
   const quickActions = [
     { icon: Heart, label: "Wellness", path: "/wellness", gradient: "from-pink-500 to-rose-500" },
@@ -131,6 +147,100 @@ export default function Dashboard() {
               );
             })}
           </div>
+        </div>
+
+        {/* My Upcoming Trips */}
+        <div>
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <Truck className="w-5 h-5 text-taabi-blue" />
+              <h2 className="text-xl font-bold">My Upcoming Trips</h2>
+            </div>
+          </div>
+          {tripsLoading ? (
+            <div className="grid grid-cols-1 gap-4">
+              {[1, 2].map((i) => (
+                <Card key={i} className="p-4 animate-pulse">
+                  <div className="h-20 bg-muted rounded-md"></div>
+                </Card>
+              ))}
+            </div>
+          ) : upcomingTrips.length === 0 ? (
+            <Card className="p-6 text-center">
+              <MapPin className="w-12 h-12 mx-auto mb-3 text-muted-foreground" />
+              <p className="text-muted-foreground">No upcoming trips scheduled</p>
+            </Card>
+          ) : (
+            <div className="grid grid-cols-1 gap-4">
+              {upcomingTrips.map((trip) => {
+                const stopCount = getDeliveryPointCount(trip.id);
+                const statusColors = {
+                  upcoming: "from-blue-500 to-cyan-500",
+                  in_progress: "from-green-500 to-emerald-500",
+                  completed: "from-gray-500 to-slate-500",
+                };
+                const statusLabels = {
+                  upcoming: "Upcoming",
+                  in_progress: "In Progress",
+                  completed: "Completed",
+                };
+
+                return (
+                  <Card
+                    key={trip.id}
+                    className="overflow-hidden hover-elevate cursor-pointer transition-all"
+                    onClick={() => setLocation(`/trip/${trip.id}`)}
+                    data-testid={`card-trip-${trip.id}`}
+                  >
+                    <div className={`h-2 bg-gradient-to-r ${statusColors[trip.status]}`}></div>
+                    <div className="p-4 space-y-3">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex-1">
+                          <h3 className="font-bold text-lg mb-1" data-testid={`text-trip-title-${trip.id}`}>
+                            {trip.title}
+                          </h3>
+                          <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                            <Calendar className="w-4 h-4" />
+                            <span data-testid={`text-trip-time-${trip.id}`}>
+                              {format(new Date(trip.scheduledTime), "MMM dd, h:mm a")}
+                            </span>
+                          </div>
+                        </div>
+                        <div className={`px-3 py-1 rounded-full text-xs font-semibold bg-gradient-to-r ${statusColors[trip.status]} text-white`}>
+                          {statusLabels[trip.status]}
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <div className="flex items-start gap-2 text-sm">
+                          <MapPinned className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
+                          <div>
+                            <p className="font-medium" data-testid={`text-trip-start-${trip.id}`}>{trip.startLocation}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-start gap-2 text-sm">
+                          <MapPin className="w-4 h-4 text-red-600 mt-0.5 flex-shrink-0" />
+                          <div>
+                            <p className="font-medium" data-testid={`text-trip-end-${trip.id}`}>{trip.endLocation}</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-between pt-2 border-t">
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <MapPin className="w-4 h-4" />
+                          <span data-testid={`text-trip-stops-${trip.id}`}>{stopCount} stops</span>
+                        </div>
+                        <Button size="sm" variant="ghost" data-testid={`button-view-trip-${trip.id}`}>
+                          View Details
+                        </Button>
+                      </div>
+                    </div>
+                  </Card>
+                );
+              })}
+            </div>
+          )}
         </div>
 
         {/* Performance Metrics - Enhanced */}

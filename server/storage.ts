@@ -135,6 +135,7 @@ export interface IStorage {
 
   // Delivery Points
   createDeliveryPoint(point: InsertDeliveryPoint): Promise<DeliveryPoint>;
+  getAllDeliveryPoints(): Promise<DeliveryPoint[]>;
   getDeliveryPointsByTrip(tripId: string): Promise<DeliveryPoint[]>;
   updateDeliveryPoint(id: string, updates: Partial<DeliveryPoint>): Promise<DeliveryPoint | undefined>;
 }
@@ -672,7 +673,10 @@ export class MemStorage implements IStorage {
   async updateUpcomingTrip(id: string, updates: Partial<UpcomingTrip>): Promise<UpcomingTrip | undefined> {
     const trip = this.upcomingTrips.get(id);
     if (!trip) return undefined;
-    const updated = { ...trip, ...updates };
+    const filteredUpdates = Object.fromEntries(
+      Object.entries(updates).filter(([_, v]) => v !== undefined)
+    );
+    const updated = { ...trip, ...filteredUpdates };
     this.upcomingTrips.set(id, updated);
     return updated;
   }
@@ -694,6 +698,11 @@ export class MemStorage implements IStorage {
     return point;
   }
 
+  async getAllDeliveryPoints(): Promise<DeliveryPoint[]> {
+    return Array.from(this.deliveryPoints.values())
+      .sort((a, b) => a.orderIndex - b.orderIndex);
+  }
+
   async getDeliveryPointsByTrip(tripId: string): Promise<DeliveryPoint[]> {
     return Array.from(this.deliveryPoints.values())
       .filter((p) => p.tripId === tripId)
@@ -703,7 +712,10 @@ export class MemStorage implements IStorage {
   async updateDeliveryPoint(id: string, updates: Partial<DeliveryPoint>): Promise<DeliveryPoint | undefined> {
     const point = this.deliveryPoints.get(id);
     if (!point) return undefined;
-    const updated = { ...point, ...updates };
+    const filteredUpdates = Object.fromEntries(
+      Object.entries(updates).filter(([_, v]) => v !== undefined)
+    );
+    const updated = { ...point, ...filteredUpdates };
     this.deliveryPoints.set(id, updated);
     return updated;
   }
