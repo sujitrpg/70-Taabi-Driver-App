@@ -28,10 +28,6 @@ export default function Dashboard() {
   const { toast } = useToast();
 
   const quickActions = [
-    { icon: Map, label: "Start Route", path: "/route", gradient: "from-blue-500 to-cyan-500" },
-    { icon: MapPin, label: "Nearby", path: "/nearby", gradient: "from-emerald-500 to-teal-500" },
-    { icon: Gift, label: "Rewards", path: "/rewards", gradient: "from-lime-500 to-green-500" },
-    { icon: Users, label: "Community", path: "/community", gradient: "from-purple-500 to-pink-500" },
     { icon: Heart, label: "Wellness", path: "/wellness", gradient: "from-pink-500 to-rose-500" },
     { icon: HandHeart, label: "Support Hub", path: "/support", gradient: "from-orange-500 to-red-500" },
     { icon: GraduationCap, label: "Learning", path: "/learning", gradient: "from-indigo-500 to-purple-500" },
