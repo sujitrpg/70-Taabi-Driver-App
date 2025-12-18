@@ -11,6 +11,12 @@
   "theme_color": "#ffffff",
   "icons": [
     {
+      "src": "/icon-192x192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any"
+    },
+    {
       "src": "/favicon.png",
       "type": "image/png",
       "sizes": "128x128"
