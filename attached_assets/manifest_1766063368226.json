@@ -1,0 +1,39 @@
+{
+  "background_color": "#ffffff",
+  "description": "Taabi Drive+ - Your intelligent companion for safer, smarter, and more rewarding truck driving. Track performance, earn rewards, and connect with fellow drivers.",
+  "dir": "ltr",
+  "display": "standalone",
+  "name": "48b27f02-9817-4f7d-9aa6-fde6cafc498e-00-2tkg3qlbw2uvy.pike.replit",
+  "orientation": "any",
+  "scope": "/",
+  "short_name": "48b27f02-9817-4f7d-9aa6-fde6cafc498e-00-2tkg3qlbw2uvy.pike.replit",
+  "start_url": "/",
+  "theme_color": "#ffffff",
+  "icons": [
+    {
+      "src": "https://48b27f02-9817-4f7d-9aa6-fde6cafc498e-00-2tkg3qlbw2uvy.pike.replit.dev/favicon.png",
+      "type": "image/png",
+      "sizes": "128x128",
+      "isSquare": true,
+      "isPng": true,
+      "isWebp": false,
+      "isJpg": false,
+      "width": 128,
+      "is512x512": false,
+      "is256x256": false,
+      "is192x192": false
+    },
+    {
+      "src": "https://48b27f02-9817-4f7d-9aa6-fde6cafc498e-00-2tkg3qlbw2uvy.pike.replit.dev/favicon.ico",
+      "type": "image/x-icon",
+      "isSquare": false,
+      "isPng": false,
+      "isWebp": false,
+      "isJpg": false,
+      "width": 0,
+      "is512x512": false,
+      "is256x256": false,
+      "is192x192": false
+    }
+  ]
+}
