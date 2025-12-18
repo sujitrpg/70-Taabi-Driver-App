@@ -1,0 +1,19 @@
+{
+  "background_color": "#ffffff",
+  "description": "Taabi Drive+ - Your intelligent companion for safer, smarter, and more rewarding truck driving. Track performance, earn rewards, and connect with fellow drivers.",
+  "dir": "ltr",
+  "display": "standalone",
+  "name": "Taabi Drive+",
+  "orientation": "any",
+  "scope": "/",
+  "short_name": "Taabi Drive+",
+  "start_url": "/",
+  "theme_color": "#ffffff",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "type": "image/png",
+      "sizes": "128x128"
+    }
+  ]
+}
